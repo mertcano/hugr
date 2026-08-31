@@ -34,11 +34,18 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Checkout PR Head safely
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
       - name: Install LLVM and Clang
         run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo add-apt-repository 'deb https://apt.llvm.org/noble/    llvm-toolchain-noble-${{ env.LLVM_MAIN_VERSION }}   main'
           sudo apt update
           sudo apt install llvm-${{ env.LLVM_MAIN_VERSION }} libpolly-${{ env.LLVM_MAIN_VERSION }}-dev
+
       - name: Run Rust checks
         uses: quantinuum/hugrverse-actions/rs-semver-checks@9ee45163d8656eb06d513cb39b77d186f86789f6
